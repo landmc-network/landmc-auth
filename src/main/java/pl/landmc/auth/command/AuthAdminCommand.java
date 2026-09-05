@@ -3,6 +3,7 @@ package pl.landmc.auth.command;
 import com.eternalcode.multification.shared.Formatter;
 import com.velocitypowered.api.command.CommandSource;
 import dev.rollczi.litecommands.annotations.argument.Arg;
+import dev.rollczi.litecommands.annotations.argument.Key;
 import dev.rollczi.litecommands.annotations.command.Command;
 import dev.rollczi.litecommands.annotations.context.Context;
 import dev.rollczi.litecommands.annotations.execute.Execute;
@@ -11,6 +12,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import pl.landmc.auth.AuthService;
 import pl.landmc.auth.config.AuthMessages;
+import pl.landmc.platform.proxy.command.VelocityCommands;
 import pl.landmc.platform.proxy.notice.VelocityNoticeService;
 
 /**
@@ -41,7 +43,7 @@ public final class AuthAdminCommand {
     @Execute(name = "premium")
     void premium(
             @Context CommandSource sender,
-            @Arg("gracz") String playerName,
+            @Key(VelocityCommands.PLAYER) @Arg("gracz") String playerName,
             @Arg("premium") boolean premium) {
 
         this.auth.account(playerName).thenAccept(account -> {
