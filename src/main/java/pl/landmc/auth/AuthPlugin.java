@@ -5,6 +5,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -62,7 +63,12 @@ import pl.landmc.platform.proxy.notice.VelocityNoticeService;
         version = "1.0.0-SNAPSHOT",
         description = "Logowanie i rejestracja sieci LandMC.",
         url = "https://github.com/landmc-network/landmc-auth",
-        authors = {"Crispi"})
+        authors = {"Crispi"},
+        // The JDBC driver lives in landmc-proxy, and only there. Velocity plugin class loaders
+        // can see one another, so the same driver packaged into two plugins is one class
+        // defined twice - and an object built by one copy reaching code from the other is a
+        // LinkageError. This dependency is what guarantees the single copy is already loaded.
+        dependencies = @Dependency(id = "landmc-proxy"))
 public final class AuthPlugin {
 
     private final ProxyServer proxy;
