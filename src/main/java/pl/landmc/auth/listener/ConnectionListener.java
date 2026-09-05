@@ -5,6 +5,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
+import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -162,10 +163,21 @@ public final class ConnectionListener {
         event.setResult(ServerPreConnectEvent.ServerResult.denied());
     }
 
+    /** Delivers the greeting a player was admitted with, once they have somewhere to read it. */
+    @Subscribe
+    public void onServerPostConnect(ServerPostConnectEvent event) {
+        // The greeting was held back until now. A client that changes server starts the new one
+        // with an empty chat, so anything said before the switch is written to a window that is
+        // about to be thrown away.
+        this.gate.greet(event.getPlayer());
+    }
+
     /** Forgets the connection, and records a session if it was a logged-in one. */
     @Subscribe
     public void onDisconnect(DisconnectEvent event) {
         Player player = event.getPlayer();
+
+        this.gate.forget(player.getUniqueId());
 
         this.auth.onDisconnect(
                 player.getUniqueId(),
